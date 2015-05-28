@@ -1,5 +1,7 @@
 # 4d-plugin-packages
-Miscellaneous function for OS X, useful for managing packages 
+Miscellaneous function for OS X, useful for managing packages.
+
+More specifically, you can define a folder as a package, give it a custom icon and hide its extension.
 
 * packages
 
