@@ -22,3 +22,7 @@ void PATH_Is_hidden(sLONG_PTR *pResult, PackagePtr pParams);
 void PATH_SET_ICON(sLONG_PTR *pResult, PackagePtr pParams);
 void PATH_Get_icon(sLONG_PTR *pResult, PackagePtr pParams);
 void PATH_Get_display_name(sLONG_PTR *pResult, PackagePtr pParams);
+
+#ifndef NSFoundationVersionNumber10_8
+#define NSFoundationVersionNumber10_8 945.00
+#endif

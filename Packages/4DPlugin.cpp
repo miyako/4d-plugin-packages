@@ -87,22 +87,25 @@ void CommandDispatcher (PA_long32 pProcNum, sLONG_PTR *pResult, PackagePtr pPara
 
 void PATH_SET_PACKAGE_BIT(sLONG_PTR *pResult, PackagePtr pParams)
 {
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
-	C_TEXT Param1;
-	C_LONGINT Param2;
-
-	Param1.fromParamAtIndex(pParams, 1);
-	Param2.fromParamAtIndex(pParams, 2);
-
-    NSURL *url = Param1.copyUrl();
+    if(NSFoundationVersionNumber >= NSFoundationVersionNumber10_8){
     
-    if(url){
-        [url setResourceValue:[NSNumber numberWithInt:Param2.getIntValue()] 
-        forKey:NSURLIsPackageKey error:NULL];
+        C_TEXT Param1;
+        C_LONGINT Param2;
+
+        Param1.fromParamAtIndex(pParams, 1);
+        Param2.fromParamAtIndex(pParams, 2);
+
+        NSURL *url = Param1.copyUrl();
+        
+        if(url){
+            [url setResourceValue:[NSNumber numberWithInt:Param2.getIntValue()] 
+            forKey:NSURLIsPackageKey error:NULL];
+          
+        }
+        
         [url release];
     } 
 
-#endif
 }
 
 void PATH_Get_package_bit(sLONG_PTR *pResult, PackagePtr pParams)
