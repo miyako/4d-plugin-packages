@@ -55,3 +55,16 @@ $hidden:=PATH Is extension hidden ($path)
 
 Discussion
 ---
+
+Read about [bundles and packages](https://developer.apple.com/library/ios/documentation/CoreFoundation/Conceptual/CFBundles/AboutBundles/AboutBundles.html). 
+
+There are several ways to define a folder as a package:
+
+1. Give it a specific [extension](https://developer.apple.com/library/ios/documentation/CoreFoundation/Conceptual/CFBundles/AboutBundles/AboutBundles.html): .app, .bundle, .framework, .plugin, .kext
+
+2. Set the [bundle bit](https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemDetails/FileSystemDetails.html) The plugin command PATH SET PACKAGE BIT does this (10.8 or later).
+
+3. Add a "[pkginfo](https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPRuntimeConfig/Articles/ConfigApplications.html)" file.
+
+4. Create an app that registers an extension as a bundle type in its [Info.plist](https://developer.apple.com/library/ios/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_declare/understand_utis_declare.html), "Exported Type UTIs" key.
+3. 
