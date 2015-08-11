@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>788BC24A-C39C-44BE-BCFA-612DD6C2A900</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>Packages</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>FCEE822D764CD83FFA90AFDC4E87C677D8A65A80</key>
 		<string>https://github.com/miyako/4d-plugin-packages.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Packages/Packages.xcodeproj/project.xcworkspace</string>
+	<string>Packages/Packages.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>FCEE822D764CD83FFA90AFDC4E87C677D8A65A80</key>

@@ -268,23 +268,30 @@ void PATH_SET_ICON(sLONG_PTR *pResult, PackagePtr pParams)
 void PATH_Get_icon(sLONG_PTR *pResult, PackagePtr pParams)
 {
 	C_TEXT Param1;
-	C_PICTURE returnValue;
 
 	Param1.fromParamAtIndex(pParams, 1);
 
 	NSString* fullPath = Param1.copyPath();	
     
     if(fullPath){
-    
-        NSImage *iconImage = [[NSWorkspace sharedWorkspace]iconForFile:fullPath];
-        if(iconImage) 
-            returnValue.setImage(iconImage);
-            
+        NSImage *icon = [[NSWorkspace sharedWorkspace]iconForFile:fullPath];
+        if(icon){
+            //return picture without memory leak; avoid the use of - TIFFRepresentation
+            NSRect imageRect = NSMakeRect(0, 0, DEFAULT_ICON_SIZE , DEFAULT_ICON_SIZE);
+            CGImageRef image = [icon CGImageForProposedRect:(NSRect *)&imageRect context:NULL hints:NULL];
+            CFMutableDataRef data = CFDataCreateMutable(kCFAllocatorDefault, 0);
+            CGImageDestinationRef destination = CGImageDestinationCreateWithData(data, kUTTypeTIFF, 1, NULL);
+            CFMutableDictionaryRef properties = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+            CGImageDestinationAddImage(destination, image, properties);
+            CGImageDestinationFinalize(destination);
+            PA_Picture picture = PA_CreatePicture((void *)CFDataGetBytePtr(data), CFDataGetLength(data));
+            *(PA_Picture*) pResult = picture;
+            CFRelease(destination);
+            CFRelease(properties);
+            CFRelease(data);
+        }
         [fullPath release];
-            
     }
-
-	returnValue.setReturn(pResult);
 }
 
 void PATH_Get_display_name(sLONG_PTR *pResult, PackagePtr pParams)

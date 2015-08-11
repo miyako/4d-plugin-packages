@@ -26,3 +26,5 @@ void PATH_Get_display_name(sLONG_PTR *pResult, PackagePtr pParams);
 #ifndef NSFoundationVersionNumber10_8
 #define NSFoundationVersionNumber10_8 945.00
 #endif
+
+#define DEFAULT_ICON_SIZE 1024
