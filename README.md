@@ -3,6 +3,30 @@ Miscellaneous function for OS X, useful for managing packages.
 
 More specifically, you can define a folder as a package, give it a custom icon and hide its extension.
 
+##Platform
+
+| carbon | cocoa | win32 | win64 |
+|:------:|:-----:|:---------:|:---------:|
+|🆗|🆗|🚫|🚫|
+
+Commands
+---
+
+```c
+// --- PATH
+PATH_SET_PACKAGE_BIT
+PATH_Get_package_bit
+PATH_Is_package
+PATH_SET_EXTENSION_HIDDEN
+PATH_Is_extension_hidden
+PATH_Get_localized_name
+PATH_SET_HIDDEN
+PATH_Is_hidden
+PATH_SET_ICON
+PATH_Get_icon
+PATH_Get_display_name
+```
+
 * packages
 
 ```
