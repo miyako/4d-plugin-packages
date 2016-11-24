@@ -12,19 +12,18 @@ More specifically, you can define a folder as a package, give it a custom icon a
 Commands
 ---
 
-```c
-// --- PATH
-PATH_SET_PACKAGE_BIT
-PATH_Get_package_bit
-PATH_Is_package
-PATH_SET_EXTENSION_HIDDEN
-PATH_Is_extension_hidden
-PATH_Get_localized_name
-PATH_SET_HIDDEN
-PATH_Is_hidden
-PATH_SET_ICON
-PATH_Get_icon
-PATH_Get_display_name
+```
+PATH SET PACKAGE BIT
+PATH Get package bit
+PATH Is package
+PATH SET EXTENSION HIDDEN
+PATH Is extension hidden
+PATH Get localized name
+PATH SET HIDDEN
+PATH Is hidden
+PATH SET ICON
+PATH Get icon
+PATH Get display name
 ```
 
 * packages
