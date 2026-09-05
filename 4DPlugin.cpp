@@ -100,10 +100,8 @@ void PATH_SET_PACKAGE_BIT(sLONG_PTR *pResult, PackagePtr pParams)
         if(url){
             [url setResourceValue:[NSNumber numberWithInt:Param2.getIntValue()] 
             forKey:NSURLIsPackageKey error:NULL];
-          
+            [url release];
         }
-        
-        [url release];
     } 
 
 }
@@ -271,6 +269,9 @@ void PATH_Get_icon(sLONG_PTR *pResult, PackagePtr pParams)
 
 	Param1.fromParamAtIndex(pParams, 1);
 
+    //always leave *pResult in a well-defined state, even on any failure path below
+    *(PA_Picture*) pResult = PA_CreatePicture(NULL, 0);
+
 	NSString* fullPath = Param1.copyPath();	
     
     if(fullPath){
@@ -279,16 +280,23 @@ void PATH_Get_icon(sLONG_PTR *pResult, PackagePtr pParams)
             //return picture without memory leak; avoid the use of - TIFFRepresentation
             NSRect imageRect = NSMakeRect(0, 0, DEFAULT_ICON_SIZE , DEFAULT_ICON_SIZE);
             CGImageRef image = [icon CGImageForProposedRect:(NSRect *)&imageRect context:NULL hints:NULL];
-            CFMutableDataRef data = CFDataCreateMutable(kCFAllocatorDefault, 0);
-            CGImageDestinationRef destination = CGImageDestinationCreateWithData(data, kUTTypeTIFF, 1, NULL);
-            CFMutableDictionaryRef properties = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
-            CGImageDestinationAddImage(destination, image, properties);
-            CGImageDestinationFinalize(destination);
-            PA_Picture picture = PA_CreatePicture((void *)CFDataGetBytePtr(data), CFDataGetLength(data));
-            *(PA_Picture*) pResult = picture;
-            CFRelease(destination);
-            CFRelease(properties);
-            CFRelease(data);
+            //CGImageForProposedRect:context:hints: is documented to be able to return NULL
+            //if the NSImage has no representation it can rasterize; guard before handing
+            //it to the CGImageDestination APIs, which do not tolerate a NULL image.
+            if(image){
+                CFMutableDataRef data = CFDataCreateMutable(kCFAllocatorDefault, 0);
+                CGImageDestinationRef destination = CGImageDestinationCreateWithData(data, kUTTypeTIFF, 1, NULL);
+                if(destination){
+                    CFMutableDictionaryRef properties = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+                    CGImageDestinationAddImage(destination, image, properties);
+                    CGImageDestinationFinalize(destination);
+                    PA_Picture picture = PA_CreatePicture((void *)CFDataGetBytePtr(data), CFDataGetLength(data));
+                    *(PA_Picture*) pResult = picture;
+                    CFRelease(destination);
+                    CFRelease(properties);
+                }
+                CFRelease(data);
+            }
         }
         [fullPath release];
     }
@@ -305,9 +313,8 @@ void PATH_Get_display_name(sLONG_PTR *pResult, PackagePtr pParams)
     
     if(fullPath){
     
-        NSFileManager *defaultManager = [[NSFileManager alloc]init];	
+        NSFileManager *defaultManager = [NSFileManager defaultManager];
         returnValue.setUTF16String([defaultManager displayNameAtPath:fullPath]);
-        [defaultManager release];
         [fullPath release];
         
     }
