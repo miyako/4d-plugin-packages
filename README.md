@@ -18,6 +18,63 @@ The Packages plugin lets 4D read and set macOS Finder-level file attributes that
 
 **Platforms:** macOS only (Carbon and Cocoa). There is no Windows implementation in this source — the entire plugin is built on Cocoa APIs (`NSURL`, `NSWorkspace`, `NSFileManager`).
 
+## Manual version and publication workflows
+
+**Bump version** and **Build** are independent manual Actions. Select the intended
+branch in the Actions UI and choose `patch`, `minor` or `major` for **Bump version**.
+It validates a clean checkout at the immutable dispatch SHA, commits only source
+version metadata and nonforce-pushes to that explicit branch. Both
+`push.followTags=false` and `--no-follow-tags` prevent incidental tag pushes.
+The executable `.github/scripts/bump-hooks/pre-push` guard is mandatory: it checks
+the receive-pack advertised old SHA against the exact dispatch SHA and checks
+the local new commit/target. Late advances, ancestor rewinds, deletions and
+same-result races fail closed, including changes after the final `ls-remote`.
+If the branch moves, dispatch again rather than force-pushing. No tag is created
+and no Build starts automatically.
+
+The original bump header promised coordinated `MARKETING_VERSION` and
+`CURRENT_PROJECT_VERSION`, rather than an independent build counter. The
+existing marketing version **1.0.4**, confirmed by source Info.plist and bump
+history, remains authority. This migration only normalizes six stale source
+`CURRENT_PROJECT_VERSION = 1.0.0` settings and the English localized `1.0`
+overrides to **1.0.4**, without a release increment. Future bumps validate and
+coordinate both settings, present source plist version keys and localized
+display versions. Valid Xcode version references are retained; absent
+`CFBundleVersion` remains absent. Prebuilt bundle metadata/binaries, dependency,
+4D project, manifest and schema versions are not version inputs or bump targets.
+
+Run **Build** separately on the desired ref. It has **no inputs**, checks out
+only the selected `github.sha`, and derives `vX.Y.Z` from validated source.
+It preserves the existing macOS universal build, Cocoa/AppKit/CoreGraphics
+dependencies, certificate import, notary credentials, universal-binary check,
+codesign/verification, ZIP/DMG packaging, notarization of both assets and DMG
+stapling. No Windows job is added: the existing bundle's prebuilt Windows binary
+and resources remain in the package. The legacy Xcode native settings are not
+modernized or bypassed by this migration. Asset names remain
+`Packages-X.Y.Z.zip` and `Packages-X.Y.Z.dmg`; release notes remain empty.
+
+Publication uses one repository-wide concurrency group across all branches.
+Before native work and again immediately after all native/sign/notary/staple
+gates, it checks remote tags and authenticated, paginated releases, including
+drafts. Every page and entry must validate; API 404, authentication, network
+and malformed responses are errors, not absence. Existing tags or releases
+block publication. Tag creation is create-only at the exact selected SHA
+(even a same-SHA race fails), followed by remote-SHA verification, a create-only
+release POST and separate asset POSTs to the returned new release ID. There
+is no update, overwrite, delete, rollback or retry.
+
+**Manual recovery:** on a failure, inspect the run error and retained remote
+tag, release ID and uploaded assets. A release POST failure leaves the tag;
+an upload failure leaves the release and any accepted assets. Do not rerun
+Build expecting it to repair that version: any retained tag/draft/release blocks
+it. An authorized maintainer must decide how to complete the retained release
+manually, or bump source for a different version. No automated cleanup is used.
+Neither workflow has push or pull-request triggers; no unrelated CI is changed.
+
+Local checks (no native build, signing or publication):
+`python3 -m unittest discover -s .github/tests -v` and
+`actionlint .github/workflows/*.yml`.
+
 ---
 
 ## Requirements & platform notes
