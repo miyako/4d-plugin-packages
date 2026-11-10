@@ -291,6 +291,7 @@ void PATH_Get_icon(sLONG_PTR *pResult, PackagePtr pParams)
                     CGImageDestinationAddImage(destination, image, properties);
                     CGImageDestinationFinalize(destination);
                     PA_Picture picture = PA_CreatePicture((void *)CFDataGetBytePtr(data), CFDataGetLength(data));
+                    PA_DisposePicture(*(PA_Picture*) pResult);
                     *(PA_Picture*) pResult = picture;
                     CFRelease(destination);
                     CFRelease(properties);
